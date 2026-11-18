@@ -1,0 +1,81 @@
+<mat-toolbar class="topbar">
+  <div class="topbar-left">
+    @if (showMenuButton()) {
+      <button mat-icon-button (click)="onToggleSidenav()" [attr.aria-label]="'menu.expandSidebar' | transloco">
+        <mat-icon>menu</mat-icon>
+      </button>
+    }
+  </div>
+
+  <div class="topbar-center">
+    <div class="search-wrapper">
+      <mat-icon class="search-icon">search</mat-icon>
+      <input
+        class="search-input"
+        type="text"
+        [placeholder]="'search.placeholder' | transloco"
+        [attr.aria-label]="'search.placeholder' | transloco"
+      />
+    </div>
+  </div>
+
+  <div class="topbar-right">
+    <button
+      mat-icon-button
+      (click)="onToggleLanguage()"
+      [matTooltip]="'menu.language' | transloco"
+    >
+      <mat-icon>translate</mat-icon>
+    </button>
+
+    <button mat-icon-button [matMenuTriggerFor]="themeMenu" [matTooltip]="'menu.theme' | transloco">
+      <mat-icon>
+        @switch (currentTheme()) {
+          @case ('light') { light_mode }
+          @case ('dark') { dark_mode }
+          @default { contrast }
+        }
+      </mat-icon>
+    </button>
+
+    <mat-menu #themeMenu="matMenu">
+      <button mat-menu-item (click)="onSetTheme('light')">
+        <mat-icon>light_mode</mat-icon>
+        <span>{{ 'menu.lightMode' | transloco }}</span>
+      </button>
+      <button mat-menu-item (click)="onSetTheme('dark')">
+        <mat-icon>dark_mode</mat-icon>
+        <span>{{ 'menu.darkMode' | transloco }}</span>
+      </button>
+      <button mat-menu-item (click)="onSetTheme('system')">
+        <mat-icon>contrast</mat-icon>
+        <span>{{ 'menu.systemTheme' | transloco }}</span>
+      </button>
+    </mat-menu>
+
+    <app-notification-bell [unreadCount]="unreadCount()" (clicked)="onNotificationBellClick()" />
+
+    @if (auth.currentUser(); as user) {
+      <button mat-icon-button [matMenuTriggerFor]="userMenu" [attr.aria-label]="user.name">
+        <app-user-avatar [name]="user.name" [color]="user.avatarColor" size="sm" />
+      </button>
+
+      <mat-menu #userMenu="matMenu">
+        <div class="user-menu-header" mat-menu-item disabled>
+          <strong>{{ user.name }}</strong>
+          <span class="user-menu-role">{{ 'roles.' + user.role | transloco }}</span>
+        </div>
+        <mat-divider />
+        <button mat-menu-item (click)="onResetData()">
+          <mat-icon>restart_alt</mat-icon>
+          <span>{{ 'menu.resetDemoData' | transloco }}</span>
+        </button>
+        <mat-divider />
+        <button mat-menu-item (click)="onLogout()">
+          <mat-icon>logout</mat-icon>
+          <span>{{ 'auth.logout' | transloco }}</span>
+        </button>
+      </mat-menu>
+    }
+  </div>
+</mat-toolbar>

@@ -1,0 +1,62 @@
+<div class="sidebar" [class.collapsed]="collapsed()">
+  <div class="sidebar-header">
+    <mat-icon class="sidebar-logo">support_agent</mat-icon>
+    @if (!collapsed()) {
+      <span class="sidebar-title">{{ 'app.name' | transloco }}</span>
+    }
+  </div>
+
+  <mat-divider />
+
+  <mat-nav-list class="sidebar-nav">
+    @for (link of navLinks(); track link.route) {
+      <a
+        mat-list-item
+        [routerLink]="link.route"
+        routerLinkActive="active-link"
+        (click)="onLinkClick()"
+        [matTooltip]="collapsed() ? (link.labelKey | transloco) : ''"
+        matTooltipPosition="after"
+      >
+        <mat-icon matListItemIcon>{{ link.icon }}</mat-icon>
+        @if (!collapsed()) {
+          <span matListItemTitle>{{ link.labelKey | transloco }}</span>
+        }
+      </a>
+    }
+  </mat-nav-list>
+
+  <div class="sidebar-spacer"></div>
+
+  <mat-divider />
+
+  <div class="sidebar-collapse-toggle">
+    <button
+      mat-icon-button
+      (click)="onToggleCollapse()"
+      [matTooltip]="collapsed() ? ('menu.expandSidebar' | transloco) : ('menu.collapseSidebar' | transloco)"
+      matTooltipPosition="after"
+    >
+      <mat-icon>{{ collapsed() ? 'chevron_right' : 'chevron_left' }}</mat-icon>
+    </button>
+  </div>
+
+  @if (currentUser(); as user) {
+    <div class="sidebar-footer">
+      <div class="sidebar-user-info">
+        <app-user-avatar [name]="user.name" [color]="user.avatarColor" size="sm" />
+        @if (!collapsed()) {
+          <div class="sidebar-user-text">
+            <span class="sidebar-user-name">{{ user.name }}</span>
+            <span class="sidebar-user-role">{{ 'roles.' + user.role | transloco }}</span>
+          </div>
+        }
+      </div>
+      @if (!collapsed()) {
+        <button mat-icon-button (click)="onLogout()" [attr.aria-label]="'auth.logout' | transloco">
+          <mat-icon>logout</mat-icon>
+        </button>
+      }
+    </div>
+  }
+</div>

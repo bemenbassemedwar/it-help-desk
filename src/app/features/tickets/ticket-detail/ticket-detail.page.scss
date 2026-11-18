@@ -1,0 +1,372 @@
+.page-container {
+  padding: var(--spacing-lg);
+  max-width: 1200px;
+  margin-inline: auto;
+}
+
+.page-header {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-sm);
+  margin-block-end: var(--spacing-lg);
+  flex-wrap: wrap;
+}
+
+.header-title {
+  flex: 1;
+  min-width: 0;
+
+  .ticket-number {
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--mat-sys-on-surface-variant);
+  }
+
+  h1 {
+    margin: 2px 0 0;
+    font-size: 1.25rem;
+    font-weight: 500;
+    word-break: break-word;
+  }
+}
+
+.header-badges {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  flex-wrap: wrap;
+}
+
+.overdue-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  background: var(--status-reopened);
+  color: #fff;
+
+  mat-icon {
+    font-size: 14px;
+    width: 14px;
+    height: 14px;
+  }
+}
+
+.detail-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-lg);
+
+  @media (max-width: 900px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.detail-main {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.detail-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+// Info card
+.info-card {
+  h3 {
+    margin-block: var(--spacing-md) var(--spacing-sm);
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--mat-sys-on-surface-variant);
+  }
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-md);
+
+  @media (max-width: 600px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.info-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.info-label {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--mat-sys-on-surface-variant);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.info-value {
+  font-size: 0.875rem;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+}
+
+.info-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+}
+
+.user-value {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+}
+
+.unassigned {
+  color: var(--mat-sys-on-surface-variant);
+  font-style: italic;
+}
+
+.overdue-text {
+  color: var(--status-reopened);
+  font-weight: 500;
+}
+
+.description-section {
+  border-block-start: 1px solid color-mix(in srgb, var(--mat-sys-on-surface) 10%, transparent);
+  margin-block-start: var(--spacing-md);
+  padding-block-start: var(--spacing-md);
+}
+
+.description-text {
+  font-size: 0.875rem;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  margin: 0;
+}
+
+// Verification card
+.verification-card {
+  border-color: var(--mat-sys-primary);
+  border-width: 2px;
+}
+
+.verification-title {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  margin: 0 0 var(--spacing-md);
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--mat-sys-primary);
+
+  mat-icon {
+    font-size: 20px;
+  }
+}
+
+.resolution-note {
+  background: var(--mat-sys-surface-container);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-md);
+  margin-block-end: var(--spacing-md);
+
+  .resolution-label {
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--mat-sys-on-surface-variant);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  p {
+    margin: var(--spacing-xs) 0 0;
+    font-size: 0.875rem;
+    line-height: 1.5;
+  }
+}
+
+.verification-actions {
+  display: flex;
+  gap: var(--spacing-sm);
+  flex-wrap: wrap;
+}
+
+.reopen-form {
+  margin-block-start: var(--spacing-md);
+}
+
+.reopen-actions {
+  display: flex;
+  gap: var(--spacing-sm);
+  justify-content: flex-end;
+}
+
+// Action card
+.action-card {
+  h3 {
+    margin: 0 0 var(--spacing-md);
+    font-size: 0.875rem;
+    font-weight: 500;
+  }
+}
+
+.action-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.action-group {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--spacing-sm);
+
+  &.vertical {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+.action-select {
+  min-width: 200px;
+  flex: 1;
+}
+
+.full-width {
+  width: 100%;
+}
+
+// Timeline
+.timeline-card {
+  min-height: 400px;
+}
+
+.timeline-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding-block: var(--spacing-sm);
+}
+
+.timeline-item {
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-block-end: 1px solid color-mix(in srgb, var(--mat-sys-on-surface) 6%, transparent);
+
+  &:last-child {
+    border-block-end: none;
+  }
+}
+
+.comment-item {
+  &.work-note {
+    background: color-mix(in srgb, var(--mat-sys-tertiary-container) 30%, transparent);
+    border-radius: var(--radius-sm);
+  }
+}
+
+.timeline-header {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.timeline-meta {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  flex-wrap: wrap;
+}
+
+.timeline-author {
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.timeline-time {
+  font-size: 0.75rem;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.comment-type-badge {
+  font-size: 0.65rem;
+  font-weight: 600;
+  padding: 1px 6px;
+  border-radius: 999px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.work-note-badge {
+  background: var(--mat-sys-tertiary-container);
+  color: var(--mat-sys-on-tertiary-container);
+}
+
+.resolution-badge {
+  background: var(--status-closed);
+  color: #fff;
+}
+
+.reopen-badge {
+  background: var(--status-reopened);
+  color: #fff;
+}
+
+.info-badge {
+  background: var(--status-open);
+  color: #fff;
+}
+
+.comment-body {
+  margin: var(--spacing-xs) 0 0;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  padding-inline-start: 36px;
+}
+
+.activity-item {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.activity-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+  color: var(--mat-sys-on-surface-variant);
+  flex-shrink: 0;
+}
+
+.activity-text {
+  font-size: 0.8rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.no-items {
+  text-align: center;
+  color: var(--mat-sys-on-surface-variant);
+  padding: var(--spacing-lg);
+}
+
+// Comment input
+.comment-input-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  padding-block-start: var(--spacing-md);
+}
+
+.comment-type-toggle {
+  align-self: flex-start;
+}

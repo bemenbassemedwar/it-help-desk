@@ -1,0 +1,440 @@
+@if (vm.loading()) {
+  <div class="page-container">
+    <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+  </div>
+}
+
+@if (vm.ticket(); as ticket) {
+  <div class="page-container">
+    <div class="page-header">
+      <button mat-icon-button (click)="onBack()">
+        <mat-icon>arrow_back</mat-icon>
+      </button>
+      <div class="header-title">
+        <span class="ticket-number">HD-{{ ticket.number }}</span>
+        <h1>{{ ticket.title }}</h1>
+      </div>
+      <div class="header-badges">
+        <app-status-badge [status]="ticket.status" />
+        <app-priority-badge [priority]="ticket.priority" />
+        @if (ticket.isOverdue) {
+          <span class="overdue-badge">
+            <mat-icon>schedule</mat-icon>
+            {{ 'ticket.overdue' | transloco }}
+          </span>
+        }
+      </div>
+    </div>
+
+    <div class="detail-layout">
+      <!-- Left column: ticket info + actions -->
+      <div class="detail-main">
+        <!-- Info section -->
+        <mat-card appearance="outlined" class="info-card">
+          <mat-card-content>
+            <div class="info-grid">
+              <div class="info-item">
+                <span class="info-label">{{ 'ticket.category' | transloco }}</span>
+                <span class="info-value">
+                  <mat-icon class="info-icon">{{ ticket.category.icon }}</mat-icon>
+                  {{ ticket.category.name }}
+                </span>
+              </div>
+              <div class="info-item">
+                <span class="info-label">{{ 'ticket.createdBy' | transloco }}</span>
+                <span class="info-value user-value">
+                  <app-user-avatar
+                    [name]="ticket.createdBy.name"
+                    [color]="ticket.createdBy.avatarColor"
+                    size="sm"
+                  />
+                  {{ ticket.createdBy.name }}
+                </span>
+              </div>
+              <div class="info-item">
+                <span class="info-label">{{ 'ticket.assignee' | transloco }}</span>
+                <span class="info-value user-value">
+                  @if (ticket.assignee) {
+                    <app-user-avatar
+                      [name]="ticket.assignee.name"
+                      [color]="ticket.assignee.avatarColor"
+                      size="sm"
+                    />
+                    {{ ticket.assignee.name }}
+                  } @else {
+                    <span class="unassigned">{{ 'dashboard.manager.unassigned' | transloco }}</span>
+                  }
+                </span>
+              </div>
+              <div class="info-item">
+                <span class="info-label">{{ 'ticket.createdAt' | transloco }}</span>
+                <span class="info-value">{{ ticket.createdAt | relativeTime }}</span>
+              </div>
+              <div class="info-item">
+                <span class="info-label">{{ 'ticket.dueDate' | transloco }}</span>
+                <span class="info-value" [class.overdue-text]="ticket.isOverdue">
+                  {{ ticket.dueAt | relativeTime }}
+                </span>
+              </div>
+            </div>
+
+            <div class="description-section">
+              <h3>{{ 'ticket.description' | transloco }}</h3>
+              <p class="description-text">{{ ticket.description }}</p>
+            </div>
+          </mat-card-content>
+        </mat-card>
+
+        <!-- Verification panel -->
+        @if (ticket.status === 'VERIFICATION' && vm.isTicketCreator()) {
+          <mat-card appearance="outlined" class="verification-card">
+            <mat-card-content>
+              <h3 class="verification-title">
+                <mat-icon>task_alt</mat-icon>
+                {{ 'verification.waitingForVerification' | transloco }}
+              </h3>
+
+              @if (vm.resolutionComment(); as resComment) {
+                <div class="resolution-note">
+                  <span class="resolution-label">{{ 'verification.resolutionNote' | transloco }}</span>
+                  <p>{{ resComment.body }}</p>
+                </div>
+              }
+
+              <div class="verification-actions">
+                <button
+                  mat-flat-button
+                  color="primary"
+                  (click)="onConfirmResolution()"
+                  [disabled]="vm.actionLoading()"
+                >
+                  <mat-icon>check_circle</mat-icon>
+                  {{ 'verification.confirmFix' | transloco }}
+                </button>
+                <button
+                  mat-stroked-button
+                  color="warn"
+                  (click)="showReopenForm = true"
+                  [disabled]="vm.actionLoading()"
+                >
+                  <mat-icon>replay</mat-icon>
+                  {{ 'verification.problemStillExists' | transloco }}
+                </button>
+              </div>
+
+              @if (showReopenForm) {
+                <div class="reopen-form">
+                  <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>{{ 'verification.reopenMessage' | transloco }}</mat-label>
+                    <textarea
+                      matInput
+                      [(ngModel)]="reopenReason"
+                      [placeholder]="'verification.reopenPlaceholder' | transloco"
+                      rows="3"
+                    ></textarea>
+                    @if (reopenReason.length > 0 && reopenReason.length < 10) {
+                      <mat-hint>{{ 'verification.minChars' | transloco: { count: 10 } }}</mat-hint>
+                    }
+                  </mat-form-field>
+                  <div class="reopen-actions">
+                    <button mat-stroked-button (click)="showReopenForm = false">
+                      {{ 'actions.cancel' | transloco }}
+                    </button>
+                    <button
+                      mat-flat-button
+                      color="warn"
+                      (click)="onReopen()"
+                      [disabled]="reopenReason.length < 10 || vm.actionLoading()"
+                    >
+                      {{ 'actions.reopen' | transloco }}
+                    </button>
+                  </div>
+                </div>
+              }
+            </mat-card-content>
+          </mat-card>
+        }
+
+        <!-- Action bar -->
+        <mat-card appearance="outlined" class="action-card">
+          <mat-card-content>
+            <h3>{{ 'table.actions' | transloco }}</h3>
+
+            <div class="action-buttons">
+              @if (vm.hasAction('ASSIGN')) {
+                <div class="action-group">
+                  <mat-form-field appearance="outline" class="action-select">
+                    <mat-label>{{ 'assign.selectAssignee' | transloco }}</mat-label>
+                    <mat-select [(ngModel)]="selectedAssigneeId">
+                      @for (eng of vm.engineers(); track eng.id) {
+                        <mat-option [value]="eng.id">{{ eng.name }}</mat-option>
+                      }
+                    </mat-select>
+                  </mat-form-field>
+                  <button
+                    mat-flat-button
+                    color="primary"
+                    (click)="onAssign()"
+                    [disabled]="!selectedAssigneeId || vm.actionLoading()"
+                  >
+                    <mat-icon>person_add</mat-icon>
+                    {{ 'actions.assign' | transloco }}
+                  </button>
+                </div>
+              }
+
+              @if (vm.hasAction('REASSIGN')) {
+                <div class="action-group">
+                  <mat-form-field appearance="outline" class="action-select">
+                    <mat-label>{{ 'assign.selectAssignee' | transloco }}</mat-label>
+                    <mat-select [(ngModel)]="selectedAssigneeId">
+                      @for (eng of vm.engineers(); track eng.id) {
+                        <mat-option [value]="eng.id">{{ eng.name }}</mat-option>
+                      }
+                    </mat-select>
+                  </mat-form-field>
+                  <button
+                    mat-flat-button
+                    (click)="onReassign()"
+                    [disabled]="!selectedAssigneeId || vm.actionLoading()"
+                  >
+                    <mat-icon>swap_horiz</mat-icon>
+                    {{ 'actions.reassign' | transloco }}
+                  </button>
+                </div>
+              }
+
+              @if (vm.hasAction('START_WORK')) {
+                <button
+                  mat-flat-button
+                  color="primary"
+                  (click)="onStartWork()"
+                  [disabled]="vm.actionLoading()"
+                >
+                  <mat-icon>play_arrow</mat-icon>
+                  {{ 'actions.startWork' | transloco }}
+                </button>
+              }
+
+              @if (vm.hasAction('SUBMIT_VERIFICATION')) {
+                <div class="action-group vertical">
+                  <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>{{ 'verification.resolutionNote' | transloco }}</mat-label>
+                    <textarea
+                      matInput
+                      [(ngModel)]="resolutionNote"
+                      rows="3"
+                    ></textarea>
+                    @if (resolutionNote.length > 0 && resolutionNote.length < 20) {
+                      <mat-hint>{{ 'verification.minChars' | transloco: { count: 20 } }}</mat-hint>
+                    }
+                  </mat-form-field>
+                  <button
+                    mat-flat-button
+                    color="primary"
+                    (click)="onSubmitVerification()"
+                    [disabled]="resolutionNote.length < 20 || vm.actionLoading()"
+                  >
+                    <mat-icon>verified</mat-icon>
+                    {{ 'actions.submitVerification' | transloco }}
+                  </button>
+                </div>
+              }
+
+              @if (vm.hasAction('SET_PRIORITY')) {
+                <div class="action-group">
+                  <mat-form-field appearance="outline" class="action-select">
+                    <mat-label>{{ 'assign.selectPriority' | transloco }}</mat-label>
+                    <mat-select [(ngModel)]="selectedPriority">
+                      @for (p of priorities; track p) {
+                        <mat-option [value]="p">{{ 'priority.' + p | transloco }}</mat-option>
+                      }
+                    </mat-select>
+                  </mat-form-field>
+                  <button
+                    mat-stroked-button
+                    (click)="onSetPriority()"
+                    [disabled]="!selectedPriority || vm.actionLoading()"
+                  >
+                    <mat-icon>flag</mat-icon>
+                    {{ 'actions.setPriority' | transloco }}
+                  </button>
+                </div>
+              }
+
+              @if (vm.hasAction('CONFIRM_RESOLUTION') && ticket.status !== 'VERIFICATION') {
+                <button
+                  mat-flat-button
+                  color="primary"
+                  (click)="onConfirmResolution()"
+                  [disabled]="vm.actionLoading()"
+                >
+                  <mat-icon>check_circle</mat-icon>
+                  {{ 'actions.confirmResolution' | transloco }}
+                </button>
+              }
+
+              @if (vm.hasAction('REOPEN') && ticket.status !== 'VERIFICATION') {
+                <div class="action-group vertical">
+                  <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>{{ 'comments.reopenReason' | transloco }}</mat-label>
+                    <textarea
+                      matInput
+                      [(ngModel)]="reopenReason"
+                      [placeholder]="'verification.reopenPlaceholder' | transloco"
+                      rows="3"
+                    ></textarea>
+                    @if (reopenReason.length > 0 && reopenReason.length < 10) {
+                      <mat-hint>{{ 'verification.minChars' | transloco: { count: 10 } }}</mat-hint>
+                    }
+                  </mat-form-field>
+                  <button
+                    mat-flat-button
+                    color="warn"
+                    (click)="onReopen()"
+                    [disabled]="reopenReason.length < 10 || vm.actionLoading()"
+                  >
+                    <mat-icon>replay</mat-icon>
+                    {{ 'actions.reopen' | transloco }}
+                  </button>
+                </div>
+              }
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+
+      <!-- Right column: timeline + comments -->
+      <div class="detail-sidebar">
+        <mat-card appearance="outlined" class="timeline-card">
+          <mat-card-content>
+            <mat-tab-group>
+              <mat-tab [label]="'comments.all' | transloco">
+                <div class="timeline-list">
+                  @for (item of vm.mergedTimeline(); track item.id) {
+                    @if (item.kind === 'comment') {
+                      <div class="timeline-item comment-item" [class.work-note]="item.comment!.type === 'WORK_NOTE'">
+                        <div class="timeline-header">
+                          <app-user-avatar
+                            [name]="vm.getCommentAuthor(item.comment!.authorId)?.name ?? 'Unknown'"
+                            [color]="vm.getCommentAuthor(item.comment!.authorId)?.avatarColor ?? '#999'"
+                            size="sm"
+                          />
+                          <div class="timeline-meta">
+                            <span class="timeline-author">{{ vm.getCommentAuthor(item.comment!.authorId)?.name ?? 'Unknown' }}</span>
+                            @if (item.comment!.type === 'WORK_NOTE') {
+                              <span class="comment-type-badge work-note-badge">{{ 'comments.workNote' | transloco }}</span>
+                            }
+                            @if (item.comment!.type === 'RESOLUTION') {
+                              <span class="comment-type-badge resolution-badge">{{ 'comments.resolution' | transloco }}</span>
+                            }
+                            @if (item.comment!.type === 'REOPEN_REASON') {
+                              <span class="comment-type-badge reopen-badge">{{ 'comments.reopenReason' | transloco }}</span>
+                            }
+                            @if (item.comment!.type === 'INFO_REQUEST') {
+                              <span class="comment-type-badge info-badge">{{ 'comments.infoRequest' | transloco }}</span>
+                            }
+                            <span class="timeline-time">{{ item.date | relativeTime }}</span>
+                          </div>
+                        </div>
+                        <p class="comment-body">{{ item.comment!.body }}</p>
+                      </div>
+                    } @else {
+                      <div class="timeline-item activity-item">
+                        <mat-icon class="activity-icon">{{ vm.getActivityIcon(item.activity!.action) }}</mat-icon>
+                        <div class="activity-text">
+                          <strong>{{ item.activity!.actorName }}</strong>
+                          {{ vm.getActivityText(item.activity!) }}
+                        </div>
+                        <span class="timeline-time">{{ item.date | relativeTime }}</span>
+                      </div>
+                    }
+                  }
+                  @if (vm.mergedTimeline().length === 0) {
+                    <p class="no-items">{{ 'common.noResults' | transloco }}</p>
+                  }
+                </div>
+              </mat-tab>
+
+              <mat-tab [label]="'comments.commentsOnly' | transloco">
+                <div class="timeline-list">
+                  @for (item of vm.commentsOnly(); track item.id) {
+                    <div class="timeline-item comment-item" [class.work-note]="item.comment!.type === 'WORK_NOTE'">
+                      <div class="timeline-header">
+                        <app-user-avatar
+                          [name]="vm.getCommentAuthor(item.comment!.authorId)?.name ?? 'Unknown'"
+                          [color]="vm.getCommentAuthor(item.comment!.authorId)?.avatarColor ?? '#999'"
+                          size="sm"
+                        />
+                        <div class="timeline-meta">
+                          <span class="timeline-author">{{ vm.getCommentAuthor(item.comment!.authorId)?.name ?? 'Unknown' }}</span>
+                          @if (item.comment!.type !== 'PUBLIC') {
+                            <span class="comment-type-badge">{{ item.comment!.type }}</span>
+                          }
+                          <span class="timeline-time">{{ item.date | relativeTime }}</span>
+                        </div>
+                      </div>
+                      <p class="comment-body">{{ item.comment!.body }}</p>
+                    </div>
+                  }
+                  @if (vm.commentsOnly().length === 0) {
+                    <p class="no-items">{{ 'common.noResults' | transloco }}</p>
+                  }
+                </div>
+              </mat-tab>
+
+              <mat-tab [label]="'comments.historyOnly' | transloco">
+                <div class="timeline-list">
+                  @for (item of vm.activitiesOnly(); track item.id) {
+                    <div class="timeline-item activity-item">
+                      <mat-icon class="activity-icon">{{ vm.getActivityIcon(item.activity!.action) }}</mat-icon>
+                      <div class="activity-text">
+                        <strong>{{ item.activity!.actorName }}</strong>
+                        {{ vm.getActivityText(item.activity!) }}
+                      </div>
+                      <span class="timeline-time">{{ item.date | relativeTime }}</span>
+                    </div>
+                  }
+                  @if (vm.activitiesOnly().length === 0) {
+                    <p class="no-items">{{ 'common.noResults' | transloco }}</p>
+                  }
+                </div>
+              </mat-tab>
+            </mat-tab-group>
+
+            <!-- Comment input -->
+            @if (vm.hasAction('COMMENT') || vm.hasAction('WORK_NOTE')) {
+              <div class="comment-input-section">
+                <mat-divider></mat-divider>
+                @if (vm.canWriteWorkNotes()) {
+                  <mat-button-toggle-group [(ngModel)]="commentType" class="comment-type-toggle">
+                    <mat-button-toggle value="PUBLIC">{{ 'comments.public' | transloco }}</mat-button-toggle>
+                    <mat-button-toggle value="WORK_NOTE">{{ 'comments.workNote' | transloco }}</mat-button-toggle>
+                  </mat-button-toggle-group>
+                }
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>{{ 'comments.addComment' | transloco }}</mat-label>
+                  <textarea
+                    matInput
+                    [(ngModel)]="commentText"
+                    [placeholder]="'comments.placeholder' | transloco"
+                    rows="2"
+                  ></textarea>
+                </mat-form-field>
+                <button
+                  mat-flat-button
+                  color="primary"
+                  (click)="onAddComment()"
+                  [disabled]="!commentText.trim() || vm.actionLoading()"
+                >
+                  <mat-icon>send</mat-icon>
+                  {{ 'comments.send' | transloco }}
+                </button>
+              </div>
+            }
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </div>
+  </div>
+}

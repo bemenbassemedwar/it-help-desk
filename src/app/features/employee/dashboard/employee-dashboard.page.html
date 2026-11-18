@@ -1,0 +1,91 @@
+@if (vm.loading()) {
+  <div class="page-container">
+    <div class="kpi-row">
+      @for (i of [1,2,3,4,5]; track i) {
+        <app-skeleton-loader type="card" />
+      }
+    </div>
+    <app-skeleton-loader type="table" [lines]="5" />
+  </div>
+} @else {
+  <div class="page-container">
+    <div class="page-header">
+      <h1>{{ 'dashboard.employee.myTickets' | transloco }}</h1>
+      <button mat-flat-button color="primary" routerLink="/employee/new-ticket">
+        <mat-icon>add</mat-icon>
+        {{ 'dashboard.employee.createNewTicket' | transloco }}
+      </button>
+    </div>
+
+    <div class="kpi-row">
+      <app-kpi-card
+        [label]="'dashboard.employee.totalTickets' | transloco"
+        [value]="vm.counts()['total'] ?? 0"
+        icon="confirmation_number"
+      />
+      <app-kpi-card
+        [label]="'dashboard.employee.openTickets' | transloco"
+        [value]="(vm.counts()['OPEN'] ?? 0) + (vm.counts()['REOPENED'] ?? 0)"
+        icon="radio_button_unchecked"
+        color="var(--status-open)"
+      />
+      <app-kpi-card
+        [label]="'dashboard.employee.inProgress' | transloco"
+        [value]="(vm.counts()['ASSIGNED'] ?? 0) + (vm.counts()['IN_PROGRESS'] ?? 0)"
+        icon="engineering"
+        color="var(--status-in-progress)"
+      />
+      <app-kpi-card
+        [label]="'dashboard.employee.waitingVerification' | transloco"
+        [value]="vm.counts()['VERIFICATION'] ?? 0"
+        icon="pending_actions"
+        color="var(--status-verification)"
+      />
+      <app-kpi-card
+        [label]="'dashboard.employee.closed' | transloco"
+        [value]="vm.counts()['CLOSED'] ?? 0"
+        icon="check_circle"
+        color="var(--status-closed)"
+      />
+    </div>
+
+    @if (vm.tickets().length === 0) {
+      <app-empty-state
+        icon="confirmation_number"
+        [title]="'ticket.noTickets' | transloco"
+        [message]="'ticket.noTicketsMessage' | transloco"
+        [actionLabel]="'ticket.createFirst' | transloco"
+        (action)="onCreateTicket()"
+      />
+    } @else {
+      <div class="ticket-list">
+        @for (ticket of vm.tickets(); track ticket.id) {
+          <mat-card
+            class="ticket-card"
+            appearance="outlined"
+            (click)="onTicketClick(ticket.id)"
+          >
+            <mat-card-content>
+              <div class="ticket-card-header">
+                <span class="ticket-number">HD-{{ ticket.number }}</span>
+                <app-status-badge [status]="ticket.status" />
+              </div>
+              <div class="ticket-card-title">{{ ticket.title }}</div>
+              <div class="ticket-card-meta">
+                <app-priority-badge [priority]="ticket.priority" />
+                <span class="ticket-category">{{ ticket.categoryName }}</span>
+                <span class="ticket-time">{{ ticket.updatedAt | relativeTime }}</span>
+              </div>
+              @if (ticket.isOverdue) {
+                <div class="overdue-indicator">
+                  <mat-icon>warning</mat-icon>
+                  {{ 'ticket.overdue' | transloco }}
+                </div>
+              }
+            </mat-card-content>
+          </mat-card>
+        }
+      </div>
+    }
+  </div>
+}

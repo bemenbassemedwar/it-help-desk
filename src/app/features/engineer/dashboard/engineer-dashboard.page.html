@@ -1,0 +1,110 @@
+@if (vm.loading()) {
+  <div class="page-container">
+    <div class="kpi-row">
+      @for (i of [1,2,3,4]; track i) {
+        <app-skeleton-loader type="card" />
+      }
+    </div>
+    <app-skeleton-loader type="table" [lines]="5" />
+  </div>
+} @else {
+  <div class="page-container">
+    <div class="page-header">
+      <h1>{{ 'dashboard.engineer.myAssigned' | transloco }}</h1>
+    </div>
+
+    <div class="kpi-row">
+      <app-kpi-card
+        [label]="'dashboard.engineer.newAssignments' | transloco"
+        [value]="vm.counts()['ASSIGNED'] ?? 0"
+        icon="person_add"
+        color="var(--status-assigned)"
+      />
+      <app-kpi-card
+        [label]="'dashboard.engineer.inProgress' | transloco"
+        [value]="vm.counts()['IN_PROGRESS'] ?? 0"
+        icon="engineering"
+        color="var(--status-in-progress)"
+      />
+      <app-kpi-card
+        [label]="'dashboard.engineer.waitingVerification' | transloco"
+        [value]="vm.counts()['VERIFICATION'] ?? 0"
+        icon="pending_actions"
+        color="var(--status-verification)"
+      />
+      <app-kpi-card
+        [label]="'dashboard.engineer.reopened' | transloco"
+        [value]="vm.counts()['REOPENED'] ?? 0"
+        icon="replay"
+        color="var(--status-reopened)"
+      />
+    </div>
+
+    <div class="filter-tabs">
+      @for (tab of filterTabs; track tab.value) {
+        <button
+          mat-stroked-button
+          [class.active-tab]="vm.activeFilter() === tab.value"
+          (click)="vm.setFilter(tab.value)"
+        >
+          {{ tab.labelKey | transloco }}
+          @if (tab.value !== 'ALL') {
+            <span class="tab-count">{{ vm.counts()[tab.value] ?? 0 }}</span>
+          }
+        </button>
+      }
+    </div>
+
+    @if (vm.filteredTickets().length === 0) {
+      <app-empty-state
+        icon="assignment"
+        [title]="'ticket.noTickets' | transloco"
+        [message]="'ticket.noTicketsMessage' | transloco"
+      />
+    } @else {
+      <div class="ticket-list">
+        @for (ticket of vm.filteredTickets(); track ticket.id) {
+          <mat-card class="ticket-card" appearance="outlined" (click)="onTicketClick(ticket.id)">
+            <mat-card-content>
+              <div class="ticket-card-row">
+                <div class="ticket-card-main">
+                  <div class="ticket-card-header">
+                    <span class="ticket-number">HD-{{ ticket.number }}</span>
+                    <app-status-badge [status]="ticket.status" />
+                  </div>
+                  <div class="ticket-card-title">{{ ticket.title }}</div>
+                  <div class="ticket-card-meta">
+                    <app-priority-badge [priority]="ticket.priority" />
+                    <span class="meta-text">{{ ticket.categoryName }}</span>
+                    <span class="meta-separator">·</span>
+                    <span class="meta-text">{{ 'ticket.createdBy' | transloco }}: {{ ticket.createdByName }}</span>
+                    <span class="meta-separator">·</span>
+                    <span class="meta-text">{{ ticket.updatedAt | relativeTime }}</span>
+                  </div>
+                  @if (ticket.isOverdue) {
+                    <div class="overdue-indicator">
+                      <mat-icon>warning</mat-icon>
+                      {{ 'ticket.overdue' | transloco }}
+                    </div>
+                  }
+                </div>
+                @if (vm.canStartWork(ticket)) {
+                  <div class="ticket-card-actions">
+                    <button
+                      mat-flat-button
+                      color="primary"
+                      (click)="onStartWork($event, ticket.id)"
+                    >
+                      <mat-icon>play_arrow</mat-icon>
+                      {{ 'actions.startWork' | transloco }}
+                    </button>
+                  </div>
+                }
+              </div>
+            </mat-card-content>
+          </mat-card>
+        }
+      </div>
+    }
+  </div>
+}

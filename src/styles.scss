@@ -1,0 +1,90 @@
+@use '@angular/material' as mat;
+
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700&display=swap');
+
+html {
+  height: 100%;
+  @include mat.theme(
+    (
+      color: (
+        primary: mat.$azure-palette,
+        tertiary: mat.$blue-palette,
+      ),
+      typography: Roboto,
+      density: 0,
+    )
+  );
+}
+
+html.dark-theme {
+  @include mat.theme(
+    (
+      color: (
+        theme-type: dark,
+        primary: mat.$azure-palette,
+        tertiary: mat.$blue-palette,
+      ),
+      typography: Roboto,
+      density: 0,
+    )
+  );
+}
+
+html[dir='rtl'] {
+  font-family: 'Cairo', 'Roboto', sans-serif;
+
+  *:not(.mat-icon):not(.material-icons) {
+    font-family: inherit;
+  }
+}
+
+body {
+  color-scheme: light;
+  background-color: var(--mat-sys-surface);
+  color: var(--mat-sys-on-surface);
+  font: var(--mat-sys-body-medium);
+  margin: 0;
+  height: 100%;
+}
+
+html.dark-theme body {
+  color-scheme: dark;
+}
+
+:root {
+  --status-open: #3b82f6;
+  --status-assigned: #8b5cf6;
+  --status-in-progress: #f97316;
+  --status-verification: #eab308;
+  --status-closed: #22c55e;
+  --status-reopened: #ef4444;
+
+  --priority-low: #6b7280;
+  --priority-medium: #3b82f6;
+  --priority-high: #f97316;
+  --priority-critical: #ef4444;
+
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+  --spacing-2xl: 48px;
+
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+
+  --sidebar-width: 260px;
+  --sidebar-collapsed-width: 68px;
+}
+
+.mat-mdc-snack-bar-container {
+  &.snackbar-success .mdc-snackbar__surface {
+    background-color: var(--status-closed) !important;
+  }
+  &.snackbar-error .mdc-snackbar__surface {
+    background-color: var(--status-reopened) !important;
+  }
+}

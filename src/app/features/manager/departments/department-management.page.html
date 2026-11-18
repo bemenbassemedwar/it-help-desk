@@ -1,0 +1,54 @@
+<div class="page-container">
+  <div class="page-header">
+    <h1 class="page-title">{{ 'management.departments.title' | transloco }}</h1>
+  </div>
+
+  <mat-card class="add-card" appearance="outlined">
+    <mat-card-content>
+      <form class="add-form" (ngSubmit)="onAdd()">
+        <mat-form-field appearance="outline" class="add-field">
+          <mat-label>{{ 'management.departments.name' | transloco }}</mat-label>
+          <input matInput #newDeptInput />
+        </mat-form-field>
+        <button mat-flat-button type="submit">
+          <mat-icon>add</mat-icon>
+          {{ 'management.departments.addDepartment' | transloco }}
+        </button>
+      </form>
+    </mat-card-content>
+  </mat-card>
+
+  @if (vm.loading()) {
+    <app-skeleton-loader type="table" [lines]="4" />
+  } @else {
+    <mat-card appearance="outlined">
+      <mat-nav-list>
+        @for (dept of vm.departments(); track dept.id) {
+          <mat-list-item>
+            @if (vm.editingId() === dept.id) {
+              <div class="edit-row">
+                <mat-form-field appearance="outline" class="edit-field">
+                  <input matInput [value]="dept.name" #editInput />
+                </mat-form-field>
+                <button mat-icon-button (click)="vm.update(dept.id, editInput.value)">
+                  <mat-icon>check</mat-icon>
+                </button>
+                <button mat-icon-button (click)="vm.cancelEdit()">
+                  <mat-icon>close</mat-icon>
+                </button>
+              </div>
+            } @else {
+              <div class="dept-row">
+                <mat-icon matListItemIcon>business</mat-icon>
+                <span matListItemTitle>{{ dept.name }}</span>
+                <button mat-icon-button (click)="vm.startEdit(dept.id)" [attr.aria-label]="'actions.edit' | transloco">
+                  <mat-icon>edit</mat-icon>
+                </button>
+              </div>
+            }
+          </mat-list-item>
+        }
+      </mat-nav-list>
+    </mat-card>
+  }
+</div>

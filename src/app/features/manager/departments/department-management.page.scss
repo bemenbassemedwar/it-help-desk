@@ -1,0 +1,51 @@
+.page-container {
+  padding: var(--spacing-lg);
+  max-width: 640px;
+  margin-inline: auto;
+}
+
+.page-header {
+  margin-block-end: var(--spacing-lg);
+}
+
+.page-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.add-card {
+  margin-block-end: var(--spacing-lg);
+}
+
+.add-form {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-sm);
+}
+
+.add-field {
+  flex: 1;
+}
+
+.dept-row {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  width: 100%;
+}
+
+.dept-row span {
+  flex: 1;
+}
+
+.edit-row {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  width: 100%;
+}
+
+.edit-field {
+  flex: 1;
+}

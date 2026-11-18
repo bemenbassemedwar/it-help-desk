@@ -1,0 +1,56 @@
+<div class="page-container">
+  <div class="page-header">
+    <h1 class="page-title">{{ 'notifications.title' | transloco }}</h1>
+    @if (vm.unreadCount() > 0) {
+      <button mat-stroked-button (click)="vm.markAllAsRead()">
+        <mat-icon>done_all</mat-icon>
+        {{ 'notifications.markAllRead' | transloco }}
+      </button>
+    }
+  </div>
+
+  @if (vm.loading()) {
+    <app-skeleton-loader type="card" />
+    <app-skeleton-loader type="card" />
+    <app-skeleton-loader type="card" />
+  } @else if (vm.notifications().length === 0) {
+    <app-empty-state
+      icon="notifications_none"
+      [title]="'notifications.noNotifications' | transloco"
+      [message]="'notifications.noNotificationsMessage' | transloco"
+    />
+  } @else {
+    <div class="notification-list">
+      @for (notif of vm.notifications(); track notif.id) {
+        <mat-card
+          class="notification-card"
+          [class.unread]="!notif.readAt"
+          appearance="outlined"
+          (click)="onNotificationClick(notif)"
+        >
+          <mat-card-content class="notification-content">
+            <div class="notification-icon-wrapper" [class.unread-icon]="!notif.readAt">
+              <mat-icon>{{ vm.getNotificationIcon(notif.type) }}</mat-icon>
+            </div>
+            <div class="notification-body">
+              <span class="notification-title">{{ notif.title }}</span>
+              <span class="notification-text">{{ notif.body }}</span>
+              <span class="notification-time">{{ notif.createdAt | relativeTime }}</span>
+            </div>
+            @if (!notif.readAt) {
+              <div class="unread-dot"></div>
+            }
+          </mat-card-content>
+        </mat-card>
+      }
+
+      @if (vm.hasMore()) {
+        <div class="load-more">
+          <button mat-stroked-button (click)="vm.loadMore()">
+            {{ 'common.loadMore' | transloco }}
+          </button>
+        </div>
+      }
+    </div>
+  }
+</div>

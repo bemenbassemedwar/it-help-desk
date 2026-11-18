@@ -1,0 +1,90 @@
+.page-container {
+  padding: var(--spacing-lg);
+  max-width: 1200px;
+  margin-inline: auto;
+}
+
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-block-end: var(--spacing-lg);
+  flex-wrap: wrap;
+  gap: var(--spacing-sm);
+
+  h1 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin: 0;
+  }
+}
+
+.kpi-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: var(--spacing-md);
+  margin-block-end: var(--spacing-lg);
+}
+
+.ticket-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.ticket-card {
+  cursor: pointer;
+  transition: border-color 0.15s;
+
+  &:hover {
+    border-color: var(--mat-sys-primary);
+  }
+}
+
+.ticket-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-block-end: var(--spacing-xs);
+}
+
+.ticket-number {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.ticket-card-title {
+  font-weight: 500;
+  margin-block-end: var(--spacing-sm);
+  line-height: 1.4;
+}
+
+.ticket-card-meta {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  flex-wrap: wrap;
+}
+
+.ticket-category,
+.ticket-time {
+  font-size: 0.8rem;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.overdue-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-block-start: var(--spacing-sm);
+  color: var(--status-reopened);
+  font-size: 0.8rem;
+  font-weight: 500;
+
+  mat-icon {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+  }
+}

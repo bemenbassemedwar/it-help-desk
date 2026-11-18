@@ -1,0 +1,141 @@
+<div class="login-container">
+  <div class="login-header">
+    <mat-icon class="logo-icon">headset_mic</mat-icon>
+    <h1>{{ 'app.name' | transloco }}</h1>
+    <p class="subtitle">{{ 'app.tagline' | transloco }}</p>
+  </div>
+
+  <div class="demo-section">
+    <h2 class="section-title">{{ 'auth.demoAccounts' | transloco }}</h2>
+
+    @if (vm.managers().length) {
+      <h3 class="role-title">
+        <mat-icon>admin_panel_settings</mat-icon>
+        {{ 'roles.MANAGER' | transloco }}
+      </h3>
+      <div class="user-grid">
+        @for (user of vm.managers(); track user.id) {
+          <mat-card class="user-card" appearance="outlined">
+            <mat-card-content>
+              <div class="user-info">
+                <app-user-avatar [name]="user.name" [color]="user.avatarColor" size="md" />
+                <div class="user-details">
+                  <span class="user-name">{{ user.name }}</span>
+                  <span class="user-email">{{ user.email }}</span>
+                  <span class="user-dept">{{ vm.getDepartmentName(user.departmentId) }}</span>
+                </div>
+              </div>
+            </mat-card-content>
+            <mat-card-actions>
+              <button mat-flat-button color="primary" (click)="onLoginAs(user)">
+                <mat-icon>login</mat-icon>
+                {{ 'auth.loginAs' | transloco }} {{ user.name.split(' ')[0] }}
+              </button>
+            </mat-card-actions>
+          </mat-card>
+        }
+      </div>
+    }
+
+    @if (vm.engineers().length) {
+      <h3 class="role-title">
+        <mat-icon>engineering</mat-icon>
+        {{ 'roles.ENGINEER' | transloco }}
+      </h3>
+      <div class="user-grid">
+        @for (user of vm.engineers(); track user.id) {
+          <mat-card class="user-card" appearance="outlined">
+            <mat-card-content>
+              <div class="user-info">
+                <app-user-avatar [name]="user.name" [color]="user.avatarColor" size="md" />
+                <div class="user-details">
+                  <span class="user-name">{{ user.name }}</span>
+                  <span class="user-email">{{ user.email }}</span>
+                  <span class="user-dept">{{ vm.getDepartmentName(user.departmentId) }}</span>
+                </div>
+              </div>
+            </mat-card-content>
+            <mat-card-actions>
+              <button mat-stroked-button (click)="onLoginAs(user)">
+                <mat-icon>login</mat-icon>
+                {{ 'auth.loginAs' | transloco }} {{ user.name.split(' ')[0] }}
+              </button>
+            </mat-card-actions>
+          </mat-card>
+        }
+      </div>
+    }
+
+    @if (vm.employees().length) {
+      <h3 class="role-title">
+        <mat-icon>person</mat-icon>
+        {{ 'roles.EMPLOYEE' | transloco }}
+      </h3>
+      <div class="user-grid">
+        @for (user of vm.employees(); track user.id) {
+          <mat-card class="user-card" appearance="outlined">
+            <mat-card-content>
+              <div class="user-info">
+                <app-user-avatar [name]="user.name" [color]="user.avatarColor" size="md" />
+                <div class="user-details">
+                  <span class="user-name">{{ user.name }}</span>
+                  <span class="user-email">{{ user.email }}</span>
+                  <span class="user-dept">{{ vm.getDepartmentName(user.departmentId) }}</span>
+                </div>
+              </div>
+            </mat-card-content>
+            <mat-card-actions>
+              <button mat-stroked-button (click)="onLoginAs(user)">
+                <mat-icon>login</mat-icon>
+                {{ 'auth.loginAs' | transloco }} {{ user.name.split(' ')[0] }}
+              </button>
+            </mat-card-actions>
+          </mat-card>
+        }
+      </div>
+    }
+  </div>
+
+  <mat-divider></mat-divider>
+
+  <div class="credentials-section">
+    <h2 class="section-title">{{ 'auth.orSignIn' | transloco }}</h2>
+
+    @if (vm.error(); as errorMsg) {
+      <div class="error-banner">
+        <mat-icon>error</mat-icon>
+        {{ errorMsg }}
+      </div>
+    }
+
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" class="login-form">
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'auth.email' | transloco }}</mat-label>
+        <input matInput formControlName="email" type="email" autocomplete="email">
+        <mat-icon matPrefix>email</mat-icon>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'auth.password' | transloco }}</mat-label>
+        <input matInput formControlName="password" type="password" autocomplete="current-password">
+        <mat-icon matPrefix>lock</mat-icon>
+      </mat-form-field>
+
+      <button
+        mat-flat-button
+        color="primary"
+        type="submit"
+        class="submit-btn"
+        [disabled]="vm.loading()"
+      >
+        {{ 'auth.login' | transloco }}
+      </button>
+
+      @if (vm.loading()) {
+        <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+      }
+
+      <p class="hint">{{ 'auth.demoPasswordHint' | transloco }}</p>
+    </form>
+  </div>
+</div>

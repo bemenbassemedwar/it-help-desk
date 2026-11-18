@@ -1,0 +1,32 @@
+.shell-container {
+  height: 100%;
+}
+
+.shell-sidenav {
+  width: var(--sidebar-width);
+  transition: width 200ms ease;
+  border-inline-end: 1px solid var(--mat-sys-outline-variant, rgba(0, 0, 0, 0.08));
+  overflow-x: hidden;
+
+  &.collapsed {
+    width: var(--sidebar-collapsed-width);
+  }
+}
+
+.shell-content {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.shell-main {
+  flex: 1;
+  padding: var(--spacing-lg);
+  overflow-y: auto;
+}
+
+@media (max-width: 768px) {
+  .shell-main {
+    padding: var(--spacing-md);
+  }
+}

@@ -1,0 +1,98 @@
+<div class="page-container">
+  <div class="page-header">
+    <button mat-icon-button (click)="onBack()">
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+    <h1>{{ 'ticket.newTicket' | transloco }}</h1>
+  </div>
+
+  @if (vm.loading()) {
+    <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+  }
+
+  @if (vm.error(); as errorMsg) {
+    <div class="error-banner">
+      <mat-icon>error_outline</mat-icon>
+      <span>{{ errorMsg }}</span>
+    </div>
+  }
+
+  @if (!vm.loading()) {
+    <mat-card appearance="outlined" class="form-card">
+      <mat-card-content>
+        <form [formGroup]="form" (ngSubmit)="onSubmit()" class="ticket-form">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>{{ 'ticket.title' | transloco }}</mat-label>
+            <input
+              matInput
+              formControlName="title"
+              [placeholder]="'ticket.titlePlaceholder' | transloco"
+              maxlength="200"
+            />
+            <mat-hint align="end">{{ form.controls.title.value.length }}/200</mat-hint>
+            @if (form.controls.title.hasError('required') && form.controls.title.touched) {
+              <mat-error>{{ 'ticket.title' | transloco }} {{ 'common.error' | transloco }}</mat-error>
+            }
+            @if (form.controls.title.hasError('minlength') && form.controls.title.touched) {
+              <mat-error>{{ 'verification.minChars' | transloco: { count: 5 } }}</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>{{ 'ticket.category' | transloco }}</mat-label>
+            <mat-select formControlName="categoryId" [placeholder]="'ticket.selectCategory' | transloco">
+              @for (cat of vm.categories(); track cat.id) {
+                <mat-option [value]="cat.id">
+                  <mat-icon class="category-icon">{{ cat.icon }}</mat-icon>
+                  {{ cat.name }}
+                </mat-option>
+              }
+            </mat-select>
+            @if (form.controls.categoryId.hasError('required') && form.controls.categoryId.touched) {
+              <mat-error>{{ 'ticket.selectCategory' | transloco }}</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>{{ 'ticket.description' | transloco }}</mat-label>
+            <textarea
+              matInput
+              formControlName="description"
+              [placeholder]="'ticket.descriptionPlaceholder' | transloco"
+              rows="6"
+              maxlength="5000"
+            ></textarea>
+            <mat-hint align="end">{{ form.controls.description.value.length }}/5000</mat-hint>
+            @if (form.controls.description.hasError('required') && form.controls.description.touched) {
+              <mat-error>{{ 'ticket.description' | transloco }} {{ 'common.error' | transloco }}</mat-error>
+            }
+            @if (form.controls.description.hasError('minlength') && form.controls.description.touched) {
+              <mat-error>{{ 'verification.minChars' | transloco: { count: 20 } }}</mat-error>
+            }
+          </mat-form-field>
+
+          <div class="form-actions">
+            <button mat-stroked-button type="button" (click)="onBack()">
+              {{ 'actions.cancel' | transloco }}
+            </button>
+            <button
+              mat-flat-button
+              color="primary"
+              type="submit"
+              [disabled]="vm.submitting()"
+            >
+              @if (vm.submitting()) {
+                <mat-icon class="spin-icon">progress_activity</mat-icon>
+              }
+              {{ 'ticket.submit' | transloco }}
+            </button>
+          </div>
+
+          @if (vm.submitting()) {
+            <mat-progress-bar mode="indeterminate" class="submit-progress"></mat-progress-bar>
+          }
+        </form>
+      </mat-card-content>
+    </mat-card>
+  }
+</div>
